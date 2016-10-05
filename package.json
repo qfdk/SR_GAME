@@ -1,0 +1,22 @@
+{
+  "name": "SR_GAME",
+  "version": "1.1.0",
+  "description": "SR",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"to do\"",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "Node.js",
+    "Socket.io"
+  ],
+  "author": "qfdk",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^2.4.1",
+    "express": "^4.13.4",
+    "serve-favicon": "^2.3.0",
+    "socket.io": "^1.4.5"
+  }
+}
