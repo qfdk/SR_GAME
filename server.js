@@ -8,8 +8,10 @@ var io = require('socket.io')(server);
 var path = require('path');
 var favicon = require('serve-favicon');
 
-var users = [];
-var jouers = [];
+var users = []; // Client connecté
+var joueurs = []; // Liste des jouers avec leurs infos : pseudo, score, position
+var bonbons = []; // Liste des bonbons avec position
+var nbBonbon = 5; // Nombre de bonbon dans le jeune
 
 // ------------express-------------------
 app.set('views', path.join(__dirname, 'views'));
@@ -28,6 +30,19 @@ app.get('/position', function (req, res) {
 });
 
 // ------------------------------------------------
+// -----------------Generation of bonbons----------------------
+// ------------------------------------------------
+while(bonbons.length<nbBonbon)
+{
+  // TODO : Check que 2 bonbons peuvent pas avoir la meme position
+  var b = {};
+  b.x =  Math.floor(Math.random() * 100);
+  b.y =  Math.floor(Math.random() * 100);
+  bonbons.push({"x":b.x,"y":b.y});
+}
+
+
+// ------------------------------------------------
 // -----------------socket.io----------------------
 // ------------------------------------------------
 io.sockets.on('connection', function (socket) {
@@ -38,15 +53,29 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('start', function (data) {
         var index = users.indexOf(socket.id);
-        jouers[index] = data;
-        io.sockets.emit('ok', { msg: 'ok', jouers: { persdo: data.persdo, position: { x: 1, y: 2 } } });
-        console.log(jouers[index]);
+
+        joueurs.push({
+            score:0,
+            pseudo:data.pseudo,
+            x:10,
+            y:20,
+            index:index
+          });
+
+        var result = {
+          "msg":'ok',
+          "joueurs" : joueurs,
+          "bonbons" : bonbons
+        };
+
+        io.sockets.emit('ok',JSON.stringify(result));
+        console.log(JSON.stringify(result, undefined, 2));
     });
 
     // ------------supprimer le client----------
     socket.on('disconnect', function (o) {
         var index = users.indexOf(socket.id);
         users.splice(index, 1);
-        console.log("[user]" + index + " disconnected.")
-    })
+        console.log("[user]" + index + " disconnected.");
+    });
 });
