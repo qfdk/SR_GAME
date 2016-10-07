@@ -8,10 +8,13 @@ var io = require('socket.io')(server);
 var path = require('path');
 var favicon = require('serve-favicon');
 
-var users = []; // Client connecté
-var joueurs = []; // Liste des jouers avec leurs infos : pseudo, score, position
-var bonbons = []; // Liste des bonbons avec position
-var nbBonbon = 5; // Nombre de bonbon dans le jeune
+var users = []; // Liste des sockets client, la clé est scoket.id 
+var joueurs = []; // Players avec leurs infos : pseudo, score, position
+var bonbons = []; // Liste des Bonbons avec position
+
+var nbBonbon = 10; // Nombre de bonbon dans le jeune
+var hauteurGrille = 20;
+var largeurGrille = 20;
 
 // ------------express-------------------
 app.set('views', path.join(__dirname, 'views'));
@@ -30,52 +33,77 @@ app.get('/position', function (req, res) {
 });
 
 // ------------------------------------------------
-// -----------------Generation of bonbons----------------------
+// -----------------INITIALISATION----------------------
 // ------------------------------------------------
-while(bonbons.length<nbBonbon)
-{
-  // TODO : Check que 2 bonbons peuvent pas avoir la meme position
-  var b = {};
-  b.x =  Math.floor(Math.random() * 100);
-  b.y =  Math.floor(Math.random() * 100);
-  bonbons.push({"x":b.x,"y":b.y});
+var existingNumbers = [];
+for (var i = 0; i < hauteurGrille * largeurGrille; i++) {
+    existingNumbers[i] = false;
 }
 
+/**
+* Generate new position in the game
+* without duplication
+*/
+function generateNewPosition() {
+    var number;
+    do {
+        number = Math.floor(Math.random() * hauteurGrille * largeurGrille);
+    }
+    while (existingNumbers[number]);
+    existingNumbers[number] = true;
+    return number;
+}
+// Initialisation of the BONBONS
+while (bonbons.length < nbBonbon) {
+    var newPosition = generateNewPosition();
+    x = newPosition % largeurGrille;
+    y = Math.floor(newPosition / largeurGrille);
+    bonbons.push({ "x": x, "y": y });
+}
 
 // ------------------------------------------------
 // -----------------socket.io----------------------
 // ------------------------------------------------
 io.sockets.on('connection', function (socket) {
     //--------------ajouter le client--------------
-    if (users.indexOf(socket.id) === -1) {
-        users.push(socket);
+    if (typeof users[socket.id] === 'undefined') {
+        users[socket.id] = socket;
+        console.log("[INFO] New user added with id " + users[socket.id].id);
     }
 
     socket.on('start', function (data) {
-        var index = users.indexOf(socket.id);
+        var index = users[socket.id].id;
+
+        var newPosition = generateNewPosition();
+        newX = newPosition % largeurGrille;
+        newY = Math.floor(newPosition / largeurGrille);
 
         joueurs.push({
-            score:0,
-            pseudo:data.pseudo,
-            x:10,
-            y:20,
-            index:index
-          });
+            score: 0,
+            pseudo: data.pseudo,
+            x: newX,
+            y: newY,
+            index: index
+        });
 
         var result = {
-          "msg":'ok',
-          "joueurs" : joueurs,
-          "bonbons" : bonbons
+            "msg": 'ok',
+            "joueurs": joueurs,
+            "bonbons": bonbons
         };
 
-        io.sockets.emit('ok',JSON.stringify(result));
+        io.sockets.emit('ok', JSON.stringify(result));
         console.log(JSON.stringify(result, undefined, 2));
     });
 
     // ------------supprimer le client----------
     socket.on('disconnect', function (o) {
-        var index = users.indexOf(socket.id);
+        var index = users[socket.id].id;
         users.splice(index, 1);
-        console.log("[user]" + index + " disconnected.");
+        console.log("[INFO]" + "Deconnexion of client " + index);
     });
+
+
 });
+
+
