@@ -8,8 +8,10 @@ var io = require('socket.io')(server);
 var path = require('path');
 var favicon = require('serve-favicon');
 
-var users = []; // Liste des sockets client, la clé est scoket.id 
+var sockets = []; // Liste des sockets client
+
 var joueurs = []; // Players avec leurs infos : pseudo, score, position
+
 var bonbons = []; // Liste des Bonbons avec position
 
 var nbBonbon = 10; // Nombre de bonbon dans le jeune
@@ -22,14 +24,15 @@ app.set('view engine', 'ejs');
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(require('express').static(path.join(__dirname, 'public')));
 server.listen(3000);
+console.log('Server on 3000; http://localhost:3000')
 
 // -----------------index-----------------
 app.get('/', function (req, res) {
     res.render('index');
 });
 
-app.get('/position', function (req, res) {
-
+app.get('/api/info', function (req, res) {
+    res.render({ user: 'info' });
 });
 
 // ------------------------------------------------
@@ -65,26 +68,27 @@ while (bonbons.length < nbBonbon) {
 // -----------------socket.io----------------------
 // ------------------------------------------------
 io.sockets.on('connection', function (socket) {
+
     //--------------ajouter le client--------------
-    if (typeof users[socket.id] === 'undefined') {
-        users[socket.id] = socket;
-        console.log("[INFO] New user added with id " + users[socket.id].id);
+    if (sockets.indexOf(socket) === -1) {
+        sockets.push(socket);
+        console.log("+1")
     }
 
     socket.on('start', function (data) {
-        var index = users[socket.id].id;
-
         var newPosition = generateNewPosition();
         newX = newPosition % largeurGrille;
         newY = Math.floor(newPosition / largeurGrille);
-
-        joueurs.push({
+        var joueur = {
             score: 0,
             pseudo: data.pseudo,
             x: newX,
             y: newY,
-            index: index
-        });
+            index: socket.id
+        };
+
+        joueurs[socket.id] = joueur;
+        console.log("[INFO] New user added with id " + joueur.pseudo);
 
         var result = {
             "msg": 'ok',
@@ -93,17 +97,15 @@ io.sockets.on('connection', function (socket) {
         };
 
         io.sockets.emit('ok', JSON.stringify(result));
-        console.log(JSON.stringify(result, undefined, 2));
     });
 
     // ------------supprimer le client----------
     socket.on('disconnect', function (o) {
-        var index = users[socket.id].id;
-        users.splice(index, 1);
-        console.log("[INFO]" + "Deconnexion of client " + index);
+        var index = sockets.indexOf(socket);
+        if (index !== -1) {
+            sockets.splice(index, 1);
+            joueurs[soket.id]=null;
+            console.log("[INFO]" + "Deconnexion of client " + joueurs[socket.id].pseudo);
+        }
     });
-
-
 });
-
-

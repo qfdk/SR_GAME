@@ -5,11 +5,31 @@
             <div class="container">
                 <h1>SR GAME</h1>
             </div>
-
         </div>
 
-                        <div id="map"></div>
-
+        <div class="container">
+            <div id='game'>
+                <div id='gameField'>
+                </div>
+                <div id='gameInfo'>
+                    <div id='points'>
+                        <div>Your score:</div>
+                        <div id='score'>0</div>
+                        <div>Speed:</div>
+                        <div id='speed'>1</div>
+                    </div>
+                    <div id='gamemsg'>
+                        <div id='nextRndMsg'>Next Round!</div>
+                        <div id='loseMsg'>You lose! Try again</div>
+                    </div>
+                    <div id='rules'>
+                        <p>Press Space to start or restart the game</p>
+                        <p>Use arrows to move</p>
+                        <p>Press Esc to quit</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <!-- Modal -->
@@ -32,4 +52,5 @@
                 </div>
             </div>
         </div>
+
         <% include foot.ejs %>
