@@ -9,11 +9,9 @@ var path = require('path');
 var favicon = require('serve-favicon');
 
 var sockets = []; // Liste des sockets client
-
 var joueurs = []; // Players avec leurs infos : pseudo, score, position
 
 var bonbons = []; // Liste des Bonbons avec position
-
 var nbBonbon = 10; // Nombre de bonbon dans le jeune
 var hauteurGrille = 20;
 var largeurGrille = 20;
@@ -36,7 +34,53 @@ app.get('/api/info', function (req, res) {
 });
 
 // ------------------------------------------------
-// -----------------INITIALISATION----------------------
+// -----------------socket.io----------------------
+// ------------------------------------------------
+io.sockets.on('connection', function (socket) {
+
+    //--------------ajouter le client--------------
+    if (sockets.indexOf(socket) === -1) {
+        sockets.push(socket);
+        console.log("+1")
+    }
+
+    socket.on('start', function (data) {
+        var newPosition = generateNewPosition();
+        newX = newPosition % largeurGrille;
+        newY = Math.floor(newPosition / largeurGrille);
+        var joueur = {
+            score: 0,
+            pseudo: data.pseudo,
+            x: newX,
+            y: newY,
+            id: socket.id
+        };
+        joueurs.push(joueur);
+        console.log("[INFO] " + "New player [" + joueur.pseudo + "] connected.");
+        var result = {
+            "msg": 'ok',
+            "joueurs": joueurs,
+            "bonbons": bonbons
+        };
+        io.sockets.emit('ok', JSON.stringify(result));
+    });
+
+    // ------------supprimer le client----------
+    socket.on('disconnect', function (o) {
+        var index = sockets.indexOf(socket);
+        var indexJoueur = getJoueurIndex(socket);
+        if (index !== -1) {
+            var tmp = joueurs[indexJoueur].pseudo;
+            sockets.splice(index, 1);
+            joueurs.splice(indexJoueur, 1);
+            console.log("[INFO] " + "Player [" + tmp + "] disconnected.");
+        }
+    });
+});
+
+
+// ------------------------------------------------
+// -----------------INITIALISATION-----------------
 // ------------------------------------------------
 var existingNumbers = [];
 for (var i = 0; i < hauteurGrille * largeurGrille; i++) {
@@ -63,50 +107,17 @@ while (bonbons.length < nbBonbon) {
     y = Math.floor(newPosition / largeurGrille);
     bonbons.push({ "x": x, "y": y });
 }
-
-// ------------------------------------------------
-// -----------------socket.io----------------------
-// ------------------------------------------------
-io.sockets.on('connection', function (socket) {
-
-    //--------------ajouter le client--------------
-    if (sockets.indexOf(socket) === -1) {
-        sockets.push(socket);
-        console.log("+1")
-    }
-
-    socket.on('start', function (data) {
-        var newPosition = generateNewPosition();
-        newX = newPosition % largeurGrille;
-        newY = Math.floor(newPosition / largeurGrille);
-        var joueur = {
-            score: 0,
-            pseudo: data.pseudo,
-            x: newX,
-            y: newY,
-            index: socket.id
-        };
-
-        joueurs[socket.id] = joueur;
-        console.log("[INFO] New user added with id " + joueur.pseudo);
-
-        var result = {
-            "msg": 'ok',
-            "joueurs": joueurs,
-            "bonbons": bonbons
-        };
-
-        io.sockets.emit('ok', JSON.stringify(result));
-    });
-
-    // ------------supprimer le client----------
-    socket.on('disconnect', function (o) {
-        var index = sockets.indexOf(socket);
-        if (index !== -1) {
-            var tmp=joueurs[socket.id].pseudo;
-            sockets.splice(index, 1);
-            joueurs[socket.id]=null;
-            console.log("[INFO]" + "Deconnexion of client " + tmp);
+/**
+ * getJoueurIndex(socket)
+ * return indice of joueur
+ */
+function getJoueurIndex(socket) {
+    var id = socket.id;
+    var index = -1;
+    joueurs.forEach(function (j) {
+        if (j.id === id) {
+            index = joueurs.indexOf(j);
         }
-    });
-});
+    }, this);
+    return index;
+}
