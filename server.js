@@ -103,9 +103,10 @@ io.sockets.on('connection', function (socket) {
     socket.on('disconnect', function (o) {
         var index = sockets.indexOf(socket);
         if (index !== -1) {
+            var tmp=joueurs[socket.id].pseudo;
             sockets.splice(index, 1);
-            joueurs[soket.id]=null;
-            console.log("[INFO]" + "Deconnexion of client " + joueurs[socket.id].pseudo);
+            joueurs[socket.id]=null;
+            console.log("[INFO]" + "Deconnexion of client " + tmp);
         }
     });
 });
