@@ -39,6 +39,7 @@ app.get('/api/info', function(req, res) {
     res.render({ user: 'info' });
 });
 
+
 // ------------------------------------------------
 // -----------------socket.io----------------------
 // ------------------------------------------------
@@ -126,10 +127,9 @@ io.sockets.on('connection', function(socket) {
         if (bonbons.length == 0) {
             console.log("Bonbon finished")
             io.sockets.emit('endGame', JSON.stringify(result));
-        }
-        else
-        {
-        io.sockets.emit('ok', JSON.stringify(result));
+            initBonbon();
+        } else {
+            io.sockets.emit('ok', JSON.stringify(result));
         }
     });
 });
@@ -139,10 +139,20 @@ io.sockets.on('connection', function(socket) {
 // -----------------INITIALISATION-----------------
 // ------------------------------------------------
 var existingNumbers = [];
-for (var i = 0; i < hauteurGrille * largeurGrille; i++) {
-    existingNumbers[i] = false;
-}
+initBonbon(); // first initialisation
 
+function initBonbon() {
+    for (var i = 0; i < hauteurGrille * largeurGrille; i++) {
+        existingNumbers[i] = false;
+    }
+    // Initialisation of the BONBONS
+    while (bonbons.length < nbBonbon) {
+        var newPosition = generateNewPosition();
+        x = (newPosition % largeurGrille) * sizeOfElement;
+        y = (Math.floor(newPosition / largeurGrille)) * sizeOfElement;
+        bonbons.push({ "x": x, "y": y });
+    }
+}
 /**
  * Generate new position in the game
  * without duplication
@@ -156,13 +166,7 @@ function generateNewPosition() {
     existingNumbers[number] = true;
     return number;
 }
-// Initialisation of the BONBONS
-while (bonbons.length < nbBonbon) {
-    var newPosition = generateNewPosition();
-    x = (newPosition % largeurGrille) * sizeOfElement;
-    y = (Math.floor(newPosition / largeurGrille)) * sizeOfElement;
-    bonbons.push({ "x": x, "y": y });
-}
+
 /**
  * getJoueurIndex(socket)
  * return indice of joueur
