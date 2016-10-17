@@ -12,7 +12,7 @@ var sockets = []; // Liste des sockets client
 var joueurs = []; // Players avec leurs infos : pseudo, score, position
 
 var bonbons = []; // Liste des Bonbons avec position
-var nbBonbon = 10; // Nombre de bonbon dans le jeu
+var nbBonbon = 20; // Nombre de bonbon dans le jeu
 var sizeOfElement = 10;
 var hauteurGrille = 400 / sizeOfElement;
 var largeurGrille = 400 / sizeOfElement;
