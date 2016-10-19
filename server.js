@@ -31,11 +31,11 @@ server.listen(3000);
 console.log('Server on 3000; http://localhost:3000')
 
 // -----------------index-----------------
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
     res.render('index');
 });
 
-app.get('/api/info', function(req, res) {
+app.get('/api/info', function (req, res) {
     res.render({ user: 'info' });
 });
 
@@ -43,7 +43,7 @@ app.get('/api/info', function(req, res) {
 // ------------------------------------------------
 // -----------------socket.io----------------------
 // ------------------------------------------------
-io.sockets.on('connection', function(socket) {
+io.sockets.on('connection', function (socket) {
 
     //--------------ajouter le client--------------
     if (sockets.indexOf(socket) === -1) {
@@ -51,13 +51,19 @@ io.sockets.on('connection', function(socket) {
         console.log("+1")
     }
 
-    socket.on('start', function(data) {
+    socket.on('start', function (data) {
         var newPosition = generateNewPosition();
         newX = (newPosition % largeurGrille) * sizeOfElement;
         newY = (Math.floor(newPosition / largeurGrille)) * sizeOfElement;
+
+        var pseudo = data.pseudo;
+
+        if (pseudo.trim() === '') {
+            pseudo = "inveted" + newX + newY
+        }
         var joueur = {
             score: 0,
-            pseudo: data.pseudo,
+            pseudo: pseudo,
             x: newX,
             y: newY,
             id: socket.id
@@ -73,10 +79,10 @@ io.sockets.on('connection', function(socket) {
     });
 
     // ------------supprimer le client----------
-    socket.on('disconnect', function(o) {
+    socket.on('disconnect', function (o) {
         var index = sockets.indexOf(socket);
         var indexJoueur = getJoueurIndex(socket);
-        if (index !== -1) {
+        if (index !== -1&&indexJoueur!==-1) {
             var tmp = joueurs[indexJoueur].pseudo;
             sockets.splice(index, 1);
             joueurs.splice(indexJoueur, 1);
@@ -85,51 +91,52 @@ io.sockets.on('connection', function(socket) {
     });
 
     // ------------ Move management ----------
-    socket.on('move', function(data) {
+    socket.on('move', function (data) {
         index = getJoueurIndex(socket);
+        if (index !== -1) {
+            var newX, newY;
+            switch (data.direction) {
+                case LEFT_ARROW:
+                    newX = joueurs[index].x - sizeOfElement;
+                    newY = joueurs[index].y;
+                    if (newX >= 0)
+                        moveTo(index, newX, newY);
+                    break;
+                case UP_ARROW:
+                    newX = joueurs[index].x;
+                    newY = joueurs[index].y - sizeOfElement;
+                    if (newY >= 0)
+                        moveTo(index, newX, newY);
+                    break;
 
-        var newX, newY;
-        switch (data.direction) {
-            case LEFT_ARROW:
-                newX = joueurs[index].x - sizeOfElement;
-                newY = joueurs[index].y;
-                if (newX >= 0)
-                    moveTo(index, newX, newY);
-                break;
-            case UP_ARROW:
-                newX = joueurs[index].x;
-                newY = joueurs[index].y - sizeOfElement;
-                if (newY >= 0)
-                    moveTo(index, newX, newY);
-                break;
+                case RIGHT_ARROW:
+                    newX = joueurs[index].x + sizeOfElement;
+                    newY = joueurs[index].y;
+                    if (newX < largeurGrille * sizeOfElement)
+                        moveTo(index, newX, newY);
+                    break;
+                case DOWN_ARROW:
+                    newX = joueurs[index].x;
+                    newY = joueurs[index].y + sizeOfElement;
+                    if (newY < hauteurGrille * sizeOfElement)
+                        moveTo(index, newX, newY);
+                    break;
+                default:
+            }
 
-            case RIGHT_ARROW:
-                newX = joueurs[index].x + sizeOfElement;
-                newY = joueurs[index].y;
-                if (newX < largeurGrille * sizeOfElement)
-                    moveTo(index, newX, newY);
-                break;
-            case DOWN_ARROW:
-                newX = joueurs[index].x;
-                newY = joueurs[index].y + sizeOfElement;
-                if (newY < hauteurGrille * sizeOfElement)
-                    moveTo(index, newX, newY);
-                break;
-            default:
-        }
+            var result = {
+                "msg": 'ok',
+                "joueurs": joueurs,
+                "bonbons": bonbons
+            };
 
-        var result = {
-            "msg": 'ok',
-            "joueurs": joueurs,
-            "bonbons": bonbons
-        };
-
-        if (bonbons.length == 0) {
-            console.log("Bonbon finished")
-            io.sockets.emit('endGame', JSON.stringify(result));
-            initBonbon();
-        } else {
-            io.sockets.emit('ok', JSON.stringify(result));
+            if (bonbons.length == 0) {
+                console.log("Bonbon finished")
+                io.sockets.emit('endGame', JSON.stringify(result));
+                initBonbon();
+            } else {
+                io.sockets.emit('ok', JSON.stringify(result));
+            }
         }
     });
 });
@@ -174,7 +181,7 @@ function generateNewPosition() {
 function getJoueurIndex(socket) {
     var id = socket.id;
     var index = -1;
-    joueurs.forEach(function(j) {
+    joueurs.forEach(function (j) {
         if (j.id === id) {
             index = joueurs.indexOf(j);
         }
@@ -191,7 +198,7 @@ function moveTo(indexJoueur, newX, newY) {
     var exit = false;
 
     // Check if there is already a player in x,y
-    joueurs.forEach(function(j) {
+    joueurs.forEach(function (j) {
 
         if (j.x === newX && j.y === newY) {
             exit = true;
@@ -201,7 +208,7 @@ function moveTo(indexJoueur, newX, newY) {
 
     // Check if there is a bonbon in x,y
     if (!exit) {
-        bonbons.forEach(function(b) {
+        bonbons.forEach(function (b) {
             if (b.x === newX && b.y === newY) {
                 bonbons.splice(bonbons.indexOf(b), 1);
 
@@ -218,4 +225,10 @@ function moveTo(indexJoueur, newX, newY) {
         joueurs[indexJoueur].x = newX;
         joueurs[indexJoueur].y = newY;
     }
+}
+
+function test()
+{
+    console.log('coucou salifou')
+    return -1
 }

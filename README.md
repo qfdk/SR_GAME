@@ -63,26 +63,27 @@ JSON move(up | left | down | right | UL | UR | DL | DR);
 
 ## Plan de travail
 
-- Séance TP1  : 
-    - Reflechir à une architecture 
+- Séance TP1(*/9)  : 
+  - [x] Reflechir à une architecture
 
-- Séance TP2  : 
-    - Connexion des clients puis message "Hello World !"
-    - Génration de la structure de données (JSON) et envoie au client 
-    - Le client affiche le JSON
+- Séance TP2(19/10)  : 
+    - [x] Connexion des clients puis message "Hello World !"
+    - [x] Génration de la structure de données (JSON) et envoie au client 
+    - [x] Le client affiche le JSON
 
 - Séance TP3  : 
-    - Mise en place de l'interface client 
-    - Gestion des deplacements
+    - [x] Mise en place de l'interface client 
+    - [x] Gestion des deplacements
 
 - Séance TP4  : 
-    -  Tests et Debug
-    -  Rapport
+    -  [ ] Tests et Debug
+    -  [ ] Tests
+    -  [ ] Rapport
 
 - Séance TP5  : 
-    -  Tests et Debug
-    -  Rapport
+    -  [ ] Tests et Debug
+    -  [ ] Rapport
 
 - Séance TP6 : 
-    -  Tests et Debug
-    -  Rapport
+    -  [ ] Tests et Debug
+    -  [ ] Rapport

@@ -6,11 +6,17 @@ $('#myModal').modal('show')
 
 var socket = io.connect('http://localhost:3000');
 
-$('#btnStart').click(function() {
-    socket.emit('start', { pseudo: $('#pseudo').val() });
+$('#btnStart').click(function () {
+    socket.emit('start', { pseudo: filterXSS($('#pseudo').val()) });
 });
 
-socket.on('ok', function(data) {
+$('#myModal').keyup(function (evt) {
+    if (evt.keyCode == 13) {
+        socket.emit('start', { pseudo: filterXSS($('#pseudo').val()) })
+        $('#myModal').modal('hide');
+    }
+});
+socket.on('ok', function (data) {
     var score = ""
     var joueurs = [];
     joueurs = JSON.parse(data).joueurs;
@@ -25,7 +31,7 @@ socket.on('ok', function(data) {
     $('#score').html(score)
 });
 
-socket.on('endGame', function(data) {
+socket.on('endGame', function (data) {
     drawGame(JSON.parse(data));
 
     var result = "Game finished and SCORE are : \n";
@@ -48,7 +54,7 @@ var RIGHT_ARROW = 39;
 var DOWN_ARROW = 40;
 
 
-$(document).ready(function() {
+$(document).ready(function () {
     $('body').keydown(keyPressedHandler);
 });
 
