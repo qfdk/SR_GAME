@@ -232,3 +232,5 @@ function test()
     console.log('coucou salifou')
     return -1
 }
+
+module.exports.test = test;
