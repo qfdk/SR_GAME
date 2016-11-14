@@ -93,6 +93,7 @@ function drawGame(data) {
         var x = joueurs[i].x;
         var y = joueurs[i].y;
         ctx.beginPath();
+        // TODO
         ctx.fillStyle = "black"
         ctx.fillRect(x, y, 10, 10);
         ctx.fill();

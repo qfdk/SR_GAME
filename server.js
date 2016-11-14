@@ -7,20 +7,25 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var path = require('path');
 var favicon = require('serve-favicon');
-
+// ------------------------------------------------
+// -----------------INITIALISATION-----------------
+// ------------------------------------------------
+// var existedElements = [];
 var sockets = []; // Liste des sockets client
 var joueurs = []; // Players avec leurs infos : pseudo, score, position
-
 var bonbons = []; // Liste des Bonbons avec position
-var nbBonbon = 20; // Nombre de bonbon dans le jeu
-var sizeOfElement = 10;
-var hauteurGrille = 400 / sizeOfElement;
-var largeurGrille = 400 / sizeOfElement;
-// Directions
-var LEFT_ARROW = 37;
-var UP_ARROW = 38;
-var RIGHT_ARROW = 39;
-var DOWN_ARROW = 40;
+
+var existedElements=config.existedElements;
+var nbBonbon = config.nbBonbon
+var sizeOfElement = config.sizeOfElement
+var hauteurGrille = config.hauteurGrille
+var largeurGrille = config.largeurGrille
+
+// // Directions
+const LEFT_ARROW = 37;
+const UP_ARROW = 38;
+const RIGHT_ARROW = 39;
+const DOWN_ARROW = 40;
 
 // ------------express-------------------
 app.set('views', path.join(__dirname, 'views'));
@@ -30,15 +35,12 @@ app.use(require('express').static(path.join(__dirname, 'public')));
 server.listen(3000);
 console.log('Server on 3000; http://localhost:3000')
 
+initBonbon(); // first initialisation
+
 // -----------------index-----------------
 app.get('/', function (req, res) {
     res.render('index');
 });
-
-app.get('/api/info', function (req, res) {
-    res.render({ user: 'info' });
-});
-
 
 // ------------------------------------------------
 // -----------------socket.io----------------------
@@ -59,7 +61,7 @@ io.sockets.on('connection', function (socket) {
         var pseudo = data.pseudo;
 
         if (pseudo.trim() === '') {
-            pseudo = "inveted" + newX + newY
+            pseudo = "[invited] " + newX + newY
         }
         var joueur = {
             score: 0,
@@ -71,7 +73,7 @@ io.sockets.on('connection', function (socket) {
         joueurs.push(joueur);
         console.log("[INFO] " + "New player [" + joueur.pseudo + "] connected.");
         var result = {
-            "msg": 'ok',
+            "msg": 'ok',// todo
             "joueurs": joueurs,
             "bonbons": bonbons
         };
@@ -80,11 +82,11 @@ io.sockets.on('connection', function (socket) {
 
     // ------------supprimer le client----------
     socket.on('disconnect', function (o) {
-        var index = sockets.indexOf(socket);
+        var indexSocket = sockets.indexOf(socket);
         var indexJoueur = getJoueurIndex(socket);
-        if (index !== -1&&indexJoueur!==-1) {
+        if (indexSocket !== -1 && indexJoueur !== -1) {
             var tmp = joueurs[indexJoueur].pseudo;
-            sockets.splice(index, 1);
+            sockets.splice(indexSocket, 1);
             joueurs.splice(indexJoueur, 1);
             console.log("[INFO] " + "Player [" + tmp + "] disconnected.");
         }
@@ -92,35 +94,35 @@ io.sockets.on('connection', function (socket) {
 
     // ------------ Move management ----------
     socket.on('move', function (data) {
-        index = getJoueurIndex(socket);
-        if (index !== -1) {
+        indexJoueur = getJoueurIndex(socket);
+        if (indexJoueur !== -1) {
             var newX, newY;
             switch (data.direction) {
                 case LEFT_ARROW:
-                    newX = joueurs[index].x - sizeOfElement;
-                    newY = joueurs[index].y;
-                    if (newX >= 0)
-                        moveTo(index, newX, newY);
-                    break;
+                newX = joueurs[indexJoueur].x - sizeOfElement;
+                newY = joueurs[indexJoueur].y;
+                if (newX >= 0)
+                    moveTo(indexJoueur, newX, newY);
+                break;
                 case UP_ARROW:
-                    newX = joueurs[index].x;
-                    newY = joueurs[index].y - sizeOfElement;
-                    if (newY >= 0)
-                        moveTo(index, newX, newY);
-                    break;
+                newX = joueurs[indexJoueur].x;
+                newY = joueurs[indexJoueur].y - sizeOfElement;
+                if (newY >= 0)
+                    moveTo(indexJoueur, newX, newY);
+                break;
 
                 case RIGHT_ARROW:
-                    newX = joueurs[index].x + sizeOfElement;
-                    newY = joueurs[index].y;
-                    if (newX < largeurGrille * sizeOfElement)
-                        moveTo(index, newX, newY);
-                    break;
+                newX = joueurs[indexJoueur].x + sizeOfElement;
+                newY = joueurs[indexJoueur].y;
+                if (newX < largeurGrille * sizeOfElement)
+                    moveTo(indexJoueur, newX, newY);
+                break;
                 case DOWN_ARROW:
-                    newX = joueurs[index].x;
-                    newY = joueurs[index].y + sizeOfElement;
-                    if (newY < hauteurGrille * sizeOfElement)
-                        moveTo(index, newX, newY);
-                    break;
+                newX = joueurs[indexJoueur].x;
+                newY = joueurs[indexJoueur].y + sizeOfElement;
+                if (newY < hauteurGrille * sizeOfElement)
+                    moveTo(indexJoueur, newX, newY);
+                break;
                 default:
             }
 
@@ -131,7 +133,7 @@ io.sockets.on('connection', function (socket) {
             };
 
             if (bonbons.length == 0) {
-                console.log("Bonbon finished")
+                console.log("[info] Game finished.")
                 io.sockets.emit('endGame', JSON.stringify(result));
                 initBonbon();
             } else {
@@ -141,16 +143,14 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
+function initBonbon()
+{
+    initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons);
+}
 
-// ------------------------------------------------
-// -----------------INITIALISATION-----------------
-// ------------------------------------------------
-var existingNumbers = [];
-initBonbon(); // first initialisation
-
-function initBonbon() {
+function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
     for (var i = 0; i < hauteurGrille * largeurGrille; i++) {
-        existingNumbers[i] = false;
+        existedElements[i] = false;
     }
     // Initialisation of the BONBONS
     while (bonbons.length < nbBonbon) {
@@ -160,17 +160,20 @@ function initBonbon() {
         bonbons.push({ "x": x, "y": y });
     }
 }
+
+
 /**
  * Generate new position in the game
  * without duplication
+ * to improve
  */
-function generateNewPosition() {
+ function generateNewPosition() {
     var number;
     do {
         number = Math.floor(Math.random() * hauteurGrille * largeurGrille);
     }
-    while (existingNumbers[number]);
-    existingNumbers[number] = true;
+    while (existedElements[number]);
+    existedElements[number] = true;
     return number;
 }
 
@@ -178,12 +181,12 @@ function generateNewPosition() {
  * getJoueurIndex(socket)
  * return indice of joueur
  */
-function getJoueurIndex(socket) {
+ function getJoueurIndex(socket) {
     var id = socket.id;
     var index = -1;
-    joueurs.forEach(function (j) {
-        if (j.id === id) {
-            index = joueurs.indexOf(j);
+    joueurs.forEach(function (joueur) {
+        if (joueur.id === id) {
+            index = joueurs.indexOf(joueur);
         }
     }, this);
     return index;
@@ -193,36 +196,35 @@ function getJoueurIndex(socket) {
  * Core of move into new place
  * 3 cases : new place is Free, there is a player, there is a bonbon
  */
-function moveTo(indexJoueur, newX, newY) {
+ function moveTo(indexJoueur, newX, newY) {
 
-    var exit = false;
-
-    // Check if there is already a player in x,y
+    var finished = false;
+    var joueur=joueurs[indexJoueur];
+    // Check if there is already a player in newX,newY
     joueurs.forEach(function (j) {
-
         if (j.x === newX && j.y === newY) {
-            exit = true;
+            finished = true;
         }
     }, this);
 
-
     // Check if there is a bonbon in x,y
-    if (!exit) {
-        bonbons.forEach(function (b) {
-            if (b.x === newX && b.y === newY) {
-                bonbons.splice(bonbons.indexOf(b), 1);
-
-                joueurs[indexJoueur].x = newX;
-                joueurs[indexJoueur].y = newY;
-                joueurs[indexJoueur].score++;
-
-                exit = true;
+    if (!finished) {
+        bonbons.forEach(function (bonbon) {
+            if (bonbon.x === newX && bonbon.y === newY) {
+                bonbons.splice(bonbons.indexOf(bonbon), 1);
+                joueur.x = newX;
+                joueur.y = newY;
+                joueur.score++;// to improve
+                finished = true;
             }
         }, this);
     }
     // The place is Free
-    if (!exit) {
-        joueurs[indexJoueur].x = newX;
-        joueurs[indexJoueur].y = newY;
+    if (!finished) {
+        joueur.x = newX;
+        joueur.y = newY;
     }
 }
+
+module.exports.initBonbon = initBonbon_test;
+module.exports.generateNewPosition = generateNewPosition;
