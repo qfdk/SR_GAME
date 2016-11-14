@@ -226,9 +226,3 @@ function moveTo(indexJoueur, newX, newY) {
         joueurs[indexJoueur].y = newY;
     }
 }
-
-function test()
-{
-    console.log('coucou salifou')
-    return -1
-}

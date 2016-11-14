@@ -4,7 +4,7 @@
   "description": "SR",
   "main": "server.js",
   "scripts": {
-    "test": "node test.js",
+    "test": "mocha test.js",
     "start": "node server.js"
   },
   "keywords": [
