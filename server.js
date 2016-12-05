@@ -42,6 +42,10 @@ app.get('/', function (req, res) {
     res.render('index');
 });
 
+app.get('/getJoueurs', function (req, res) {
+    res.json({'size':joueurs.length});
+});
+
 // ------------------------------------------------
 // -----------------socket.io----------------------
 // ------------------------------------------------
@@ -131,7 +135,7 @@ io.sockets.on('connection', function (socket) {
                 "joueurs": joueurs,
                 "bonbons": bonbons
             };
-
+            
             if (bonbons.length == 0) {
                 console.log("[info] Game finished.")
                 io.sockets.emit('endGame', JSON.stringify(result));
@@ -145,10 +149,11 @@ io.sockets.on('connection', function (socket) {
 
 function initBonbon()
 {
-    initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons);
+    initBonbonConst
+(hauteurGrille,largeurGrille,existedElements,bonbons);
 }
 
-function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
+function initBonbonConst(hauteurGrille,largeurGrille,existedElements,bonbons) {
     for (var i = 0; i < hauteurGrille * largeurGrille; i++) {
         existedElements[i] = false;
     }
@@ -226,5 +231,5 @@ function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
     }
 }
 
-module.exports.initBonbon = initBonbon_test;
+module.exports.initBonbon = initBonbonConst;
 module.exports.generateNewPosition = generateNewPosition;

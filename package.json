@@ -1,25 +1,27 @@
 {
-    "name": "SR_GAME",
-    "version": "1.1.0",
-    "description": "SR",
-    "main": "server.js",
-    "scripts": {
-        "test": "./node_modules/mocha/bin/mocha test2.js",
-        "start": "node server.js"
-    },
-    "keywords": [
-        "Node.js",
-        "Socket.io"
-    ],
-    "author": "qfdk",
-    "license": "ISC",
-    "dependencies": {
-        "ejs": "^2.4.1",
-        "express": "^4.13.4",
-        "serve-favicon": "^2.3.0",
-        "socket.io": "^1.4.5"
-    },
-    "devDependencies": {
-        "mocha": "^3.1.2"
-    }
+  "name": "SR_GAME",
+  "version": "1.1.0",
+  "description": "SR",
+  "main": "server.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha test.js",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "Node.js",
+    "Socket.io"
+  ],
+  "author": "qfdk",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^2.4.1",
+    "express": "^4.13.4",
+    "request": "^2.79.0",
+    "serve-favicon": "^2.3.0",
+    "socket.io": "^1.4.5",
+    "socket.io-client": "^1.7.1"
+  },
+  "devDependencies": {
+    "mocha": "^3.1.2"
+  }
 }

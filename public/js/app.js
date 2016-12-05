@@ -16,6 +16,7 @@ $('#myModal').keyup(function (evt) {
         $('#myModal').modal('hide');
     }
 });
+
 socket.on('ok', function (data) {
     var score = ""
     var joueurs = [];
