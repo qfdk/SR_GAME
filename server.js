@@ -59,6 +59,7 @@ io.sockets.on('connection', function(socket) {
     }
 
     socket.on('start', function(data) {
+
         var newPosition = generateNewPosition();
         newX = (newPosition % largeurGrille) * sizeOfElement;
         newY = (Math.floor(newPosition / largeurGrille)) * sizeOfElement;
@@ -141,6 +142,7 @@ io.sockets.on('connection', function(socket) {
             if (bonbons.length == 0) {
                 console.log("[info] Game finished.")
                 io.sockets.emit('endGame', JSON.stringify(result));
+                clearGame();
                 initBonbon();
             } else {
                 io.sockets.emit('ok', JSON.stringify(result));
@@ -237,6 +239,13 @@ function getRndColor() {
         g = 255 * Math.random() | 0,
         b = 255 * Math.random() | 0;
     return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
+
+function clearGame() {
+    sockets.forEach(function(s) {
+        s.disconnect(true);
+    });
+    joueurs = [];
 }
 
 module.exports.initBonbon = initBonbonConst;

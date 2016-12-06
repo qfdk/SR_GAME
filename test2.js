@@ -7,7 +7,7 @@ var options = {
 var socketURL = 'http://localhost:3000';
 
 var clients = []
-var nbClient = 10
+var nbClient = 5
 
 for (var i = 0; i < nbClient; i++) {
     clients[i] = io.connect(socketURL, options)
@@ -20,9 +20,9 @@ for (var i = 0; i < nbClient; i++) {
 setInterval(function() {
     for (var i = 0; i < nbClient; i++) {
         var randomDirection = Math.floor((Math.random() * 4) + 37);
-        var nbMove = Math.floor((Math.random() * 10));
+        var nbMove = Math.floor((Math.random() * 20));
         for (var j = 0; j < nbMove; j++) {
             clients[i].emit('move', { 'direction': randomDirection })
         }
     }
-}, 500);
+}, 200);
