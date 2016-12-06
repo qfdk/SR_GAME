@@ -42,6 +42,7 @@ app.get('/', function (req, res) {
     res.render('index');
 });
 
+
 // ------------------------------------------------
 // -----------------socket.io----------------------
 // ------------------------------------------------
@@ -228,3 +229,4 @@ function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
 
 module.exports.initBonbon = initBonbon_test;
 module.exports.generateNewPosition = generateNewPosition;
+module.exports.initBonbon = initBonbon_test;
