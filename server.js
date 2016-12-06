@@ -15,7 +15,7 @@ var sockets = []; // Liste des sockets client
 var joueurs = []; // Players avec leurs infos : pseudo, score, position
 var bonbons = []; // Liste des Bonbons avec position
 
-var existedElements=config.existedElements;
+var existedElements = config.existedElements;
 var nbBonbon = config.nbBonbon
 var sizeOfElement = config.sizeOfElement
 var hauteurGrille = config.hauteurGrille
@@ -38,15 +38,19 @@ console.log('Server on 3000; http://localhost:3000')
 initBonbon(); // first initialisation
 
 // -----------------index-----------------
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
     res.render('index');
 });
 
 
+app.get('/getJoueurs', function(req, res) {
+    res.json({ 'size': joueurs.length });
+});
+
 // ------------------------------------------------
 // -----------------socket.io----------------------
 // ------------------------------------------------
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function(socket) {
 
     //--------------ajouter le client--------------
     if (sockets.indexOf(socket) === -1) {
@@ -54,7 +58,7 @@ io.sockets.on('connection', function (socket) {
         console.log("+1")
     }
 
-    socket.on('start', function (data) {
+    socket.on('start', function(data) {
         var newPosition = generateNewPosition();
         newX = (newPosition % largeurGrille) * sizeOfElement;
         newY = (Math.floor(newPosition / largeurGrille)) * sizeOfElement;
@@ -69,12 +73,13 @@ io.sockets.on('connection', function (socket) {
             pseudo: pseudo,
             x: newX,
             y: newY,
-            id: socket.id
+            id: socket.id,
+            color: getRndColor()
         };
         joueurs.push(joueur);
         console.log("[INFO] " + "New player [" + joueur.pseudo + "] connected.");
         var result = {
-            "msg": 'ok',// todo
+            "msg": 'ok', // todo
             "joueurs": joueurs,
             "bonbons": bonbons
         };
@@ -82,7 +87,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     // ------------supprimer le client----------
-    socket.on('disconnect', function (o) {
+    socket.on('disconnect', function(o) {
         var indexSocket = sockets.indexOf(socket);
         var indexJoueur = getJoueurIndex(socket);
         if (indexSocket !== -1 && indexJoueur !== -1) {
@@ -94,36 +99,36 @@ io.sockets.on('connection', function (socket) {
     });
 
     // ------------ Move management ----------
-    socket.on('move', function (data) {
+    socket.on('move', function(data) {
         indexJoueur = getJoueurIndex(socket);
         if (indexJoueur !== -1) {
             var newX, newY;
             switch (data.direction) {
                 case LEFT_ARROW:
-                newX = joueurs[indexJoueur].x - sizeOfElement;
-                newY = joueurs[indexJoueur].y;
-                if (newX >= 0)
-                    moveTo(indexJoueur, newX, newY);
-                break;
+                    newX = joueurs[indexJoueur].x - sizeOfElement;
+                    newY = joueurs[indexJoueur].y;
+                    if (newX >= 0)
+                        moveTo(indexJoueur, newX, newY);
+                    break;
                 case UP_ARROW:
-                newX = joueurs[indexJoueur].x;
-                newY = joueurs[indexJoueur].y - sizeOfElement;
-                if (newY >= 0)
-                    moveTo(indexJoueur, newX, newY);
-                break;
+                    newX = joueurs[indexJoueur].x;
+                    newY = joueurs[indexJoueur].y - sizeOfElement;
+                    if (newY >= 0)
+                        moveTo(indexJoueur, newX, newY);
+                    break;
 
                 case RIGHT_ARROW:
-                newX = joueurs[indexJoueur].x + sizeOfElement;
-                newY = joueurs[indexJoueur].y;
-                if (newX < largeurGrille * sizeOfElement)
-                    moveTo(indexJoueur, newX, newY);
-                break;
+                    newX = joueurs[indexJoueur].x + sizeOfElement;
+                    newY = joueurs[indexJoueur].y;
+                    if (newX < largeurGrille * sizeOfElement)
+                        moveTo(indexJoueur, newX, newY);
+                    break;
                 case DOWN_ARROW:
-                newX = joueurs[indexJoueur].x;
-                newY = joueurs[indexJoueur].y + sizeOfElement;
-                if (newY < hauteurGrille * sizeOfElement)
-                    moveTo(indexJoueur, newX, newY);
-                break;
+                    newX = joueurs[indexJoueur].x;
+                    newY = joueurs[indexJoueur].y + sizeOfElement;
+                    if (newY < hauteurGrille * sizeOfElement)
+                        moveTo(indexJoueur, newX, newY);
+                    break;
                 default:
             }
 
@@ -144,12 +149,12 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
-function initBonbon()
-{
-    initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons);
+function initBonbon() {
+    initBonbonConst
+        (hauteurGrille, largeurGrille, existedElements, bonbons);
 }
 
-function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
+function initBonbonConst(hauteurGrille, largeurGrille, existedElements, bonbons) {
     for (var i = 0; i < hauteurGrille * largeurGrille; i++) {
         existedElements[i] = false;
     }
@@ -168,7 +173,7 @@ function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
  * without duplication
  * to improve
  */
- function generateNewPosition() {
+function generateNewPosition() {
     var number;
     do {
         number = Math.floor(Math.random() * hauteurGrille * largeurGrille);
@@ -182,10 +187,10 @@ function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
  * getJoueurIndex(socket)
  * return indice of joueur
  */
- function getJoueurIndex(socket) {
+function getJoueurIndex(socket) {
     var id = socket.id;
     var index = -1;
-    joueurs.forEach(function (joueur) {
+    joueurs.forEach(function(joueur) {
         if (joueur.id === id) {
             index = joueurs.indexOf(joueur);
         }
@@ -197,12 +202,12 @@ function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
  * Core of move into new place
  * 3 cases : new place is Free, there is a player, there is a bonbon
  */
- function moveTo(indexJoueur, newX, newY) {
+function moveTo(indexJoueur, newX, newY) {
 
     var finished = false;
-    var joueur=joueurs[indexJoueur];
+    var joueur = joueurs[indexJoueur];
     // Check if there is already a player in newX,newY
-    joueurs.forEach(function (j) {
+    joueurs.forEach(function(j) {
         if (j.x === newX && j.y === newY) {
             finished = true;
         }
@@ -210,12 +215,12 @@ function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
 
     // Check if there is a bonbon in x,y
     if (!finished) {
-        bonbons.forEach(function (bonbon) {
+        bonbons.forEach(function(bonbon) {
             if (bonbon.x === newX && bonbon.y === newY) {
                 bonbons.splice(bonbons.indexOf(bonbon), 1);
                 joueur.x = newX;
                 joueur.y = newY;
-                joueur.score++;// to improve
+                joueur.score++; // to improve
                 finished = true;
             }
         }, this);
@@ -227,6 +232,12 @@ function initBonbon_test(hauteurGrille,largeurGrille,existedElements,bonbons) {
     }
 }
 
-module.exports.initBonbon = initBonbon_test;
+function getRndColor() {
+    var r = 255 * Math.random() | 0,
+        g = 255 * Math.random() | 0,
+        b = 255 * Math.random() | 0;
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
+
+module.exports.initBonbon = initBonbonConst;
 module.exports.generateNewPosition = generateNewPosition;
-module.exports.initBonbon = initBonbon_test;

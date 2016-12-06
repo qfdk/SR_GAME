@@ -6,17 +6,18 @@ $('#myModal').modal('show')
 
 var socket = io.connect('http://localhost:3000');
 
-$('#btnStart').click(function () {
+$('#btnStart').click(function() {
     socket.emit('start', { pseudo: filterXSS($('#pseudo').val()) });
 });
 
-$('#myModal').keyup(function (evt) {
+$('#myModal').keyup(function(evt) {
     if (evt.keyCode == 13) {
         socket.emit('start', { pseudo: filterXSS($('#pseudo').val()) })
         $('#myModal').modal('hide');
     }
 });
-socket.on('ok', function (data) {
+
+socket.on('ok', function(data) {
     var score = ""
     var joueurs = [];
     joueurs = JSON.parse(data).joueurs;
@@ -31,7 +32,7 @@ socket.on('ok', function (data) {
     $('#score').html(score)
 });
 
-socket.on('endGame', function (data) {
+socket.on('endGame', function(data) {
     drawGame(JSON.parse(data));
 
     var result = "Game finished and SCORE are : \n";
@@ -54,7 +55,7 @@ var RIGHT_ARROW = 39;
 var DOWN_ARROW = 40;
 
 
-$(document).ready(function () {
+$(document).ready(function() {
     $('body').keydown(keyPressedHandler);
 });
 
@@ -94,7 +95,7 @@ function drawGame(data) {
         var y = joueurs[i].y;
         ctx.beginPath();
         // TODO
-        ctx.fillStyle = "black"
+        ctx.fillStyle = joueurs[i].color;
         ctx.fillRect(x, y, 10, 10);
         ctx.fill();
         ctx.closePath();
