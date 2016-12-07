@@ -1,36 +1,34 @@
 var assert = require('assert');
-var io = require('socket.io-client');
-// var server = require('./server.js')
 var request = require('request');
-var url ="http://localhost:3000/getJoueurs";
+var io = require('socket.io-client');
+var url = "http://localhost:3000/getJoueurs";
 var joueurs = [];
+const NB_joueurs = 20;
 
-// describe('[2] Client', function () {
-//     describe('1) Client number = 2', function () {
-//         it('Client number = 2', function () {
-
-//             assert.equal(joueurs.length, server.getJoueurs().length);
-//         });
-//     });
-// });
-for (var i = 0; i < 10; i++) {
-    joueurs[i] = io.connect("http://localhost:3000").emit('start', { pseudo: "joueur" + i });
-}
-
-setInterval(function(){
-request.get({
-    url: url,
-    json: true,
-    headers: { 'User-Agent': 'request' }
-}, (err, res, data) => {
-    if (err) {
-        console.log('Error:', err);
-    } else if (res.statusCode !== 200) {
-        console.log('Status:', res.statusCode);
-    } else {
-        console.log('coucou salifou');
-        console.log(data);
-    }
+describe('[1] Joueurs', function () {
+    describe('1)', function () {
+        it('Joueurs number = Our joueurs number ' + NB_joueurs, function () {
+            setTimeout(function () {
+                for (var i = 0; i < NB_joueurs; i++) {
+                    joueurs[i] = io.connect("http://localhost:3000", {
+                        transports: ['websocket'],
+                        'force new connection': true
+                    }).emit('start', { pseudo: "joueur" + i });
+                }
+                request.get({
+                    url: url,
+                    json: true,
+                    headers: { 'User-Agent': 'request' }
+                }, (err, res, data) => {
+                    if (err) {
+                        console.log('Error:', err);
+                    } else if (res.statusCode !== 200) {
+                        console.log('Status:', res.statusCode);
+                    } else {
+                        assert.equal(data.size, NB_joueurs);
+                    }
+                });
+            }, NB_joueurs * 1000);
+        });
+    });
 });
-
-},5000);

@@ -16,7 +16,6 @@ for (var i = 0; i < nbClient; i++) {
     clients[i].emit('start', { 'pseudo': pseudo });
 }
 
-
 setInterval(function() {
     for (var i = 0; i < nbClient; i++) {
         var randomDirection = Math.floor((Math.random() * 4) + 37);

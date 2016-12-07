@@ -43,7 +43,6 @@ socket.on('endGame', function(data) {
     }
     alert(result);
     location.reload();
-
 });
 
 

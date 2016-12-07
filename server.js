@@ -55,7 +55,6 @@ io.sockets.on('connection', function(socket) {
     //--------------ajouter le client--------------
     if (sockets.indexOf(socket) === -1) {
         sockets.push(socket);
-        console.log("+1")
     }
 
     socket.on('start', function(data) {
