@@ -4,7 +4,7 @@
 
 $('#myModal').modal('show')
 
-var socket = io.connect('http://localhost:3000');
+var socket = io.connect('http://ymaiga.com:3000');
 
 $('#btnStart').click(function() {
     socket.emit('start', { pseudo: filterXSS($('#pseudo').val()) });
