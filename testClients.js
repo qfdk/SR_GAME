@@ -1,9 +1,13 @@
 var assert = require('assert');
 var request = require('request');
+var expect = require("chai").expect;
+var httpUtils = require('request-mocha')(request);
 var io = require('socket.io-client');
+var sleep = require('sleep');
+
 var url = "http://localhost:3000/getJoueurs";
 var joueurs = [];
-const NB_joueurs = 100;
+const NB_joueurs = 1000;
 
 for (var i = 0; i < NB_joueurs; i++) {
     joueurs[i] = io.connect("http://localhost:3000", {
@@ -12,19 +16,13 @@ for (var i = 0; i < NB_joueurs; i++) {
     }).emit('start', { pseudo: "joueur" + i });
 }
 
-request.get({
-    url: url,
-    json: true,
-    headers: { 'User-Agent': 'request' }
-}, (err, res, data) => {
-    if (err) {
-        console.log('Error:', err);
-    } else if (res.statusCode !== 200) {
-        console.log('Status:', res.statusCode);
-    } else {
-        // console.log(data.size);
-        setTimeout(function () {
-            assert.equal(data.size, NB_joueurs);
-        }, 200000);
-    }
-});
+// sleep.sleep(10);
+
+// describe('[1] Joueurs test', function () {
+//     httpUtils.save(url);
+//     it('responded with number Joueurs', function () {
+//         expect(this.err).to.equal(null);
+//         expect(this.res.statusCode).to.equal(200);
+//         expect(this.body).to.equal('{"size":' + NB_joueurs + '}');
+//     });
+// });
