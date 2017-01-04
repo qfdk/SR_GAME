@@ -7,7 +7,7 @@ var sleep = require('sleep');
 
 var url = "http://localhost:3000/getJoueurs";
 var joueurs = [];
-const NB_joueurs = 1000;
+const NB_joueurs = 100;
 
 for (var i = 0; i < NB_joueurs; i++) {
     joueurs[i] = io.connect("http://localhost:3000", {
@@ -16,13 +16,13 @@ for (var i = 0; i < NB_joueurs; i++) {
     }).emit('start', { pseudo: "joueur" + i });
 }
 
-// sleep.sleep(10);
+sleep.sleep(10);
 
-// describe('[1] Joueurs test', function () {
-//     httpUtils.save(url);
-//     it('responded with number Joueurs', function () {
-//         expect(this.err).to.equal(null);
-//         expect(this.res.statusCode).to.equal(200);
-//         expect(this.body).to.equal('{"size":' + NB_joueurs + '}');
-//     });
-// });
+describe('[1] Joueurs test', function () {
+    httpUtils.save(url);
+    it('responded with number Joueurs', function () {
+        expect(this.err).to.equal(null);
+        expect(this.res.statusCode).to.equal(200);
+        expect(this.body).to.equal('{"size":' + NB_joueurs + '}');
+    });
+});
