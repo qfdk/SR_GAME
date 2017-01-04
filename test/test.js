@@ -1,6 +1,6 @@
 var assert = require('assert');
-const config = require('./config.js');
-var server = require('./server.js')
+const config = require('../config.js');
+var server = require('../server.js')
 
 var existedElements=config.existedElements;
 var nbBonbon = config.nbBonbon

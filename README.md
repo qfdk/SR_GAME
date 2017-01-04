@@ -1,4 +1,5 @@
-# Projet Jeu distribué
+# Projet Jeu distribué [![Build Status](https://travis-ci.com/qfdk/SR_GAME.svg?token=8C74kp9Fo1bHwzqBWYmq&branch=master)](https://travis-ci.com/qfdk/SR_GAME)
+
 ## Architecture 
 
 Le jeux repose sur une architecture client/serveur.
@@ -76,13 +77,13 @@ JSON move(up | left | down | right | UL | UR | DL | DR);
     - [x] Gestion des deplacements
 
 - Séance TP4  : 
-    -  [ ] Tests et Debug
-    -  [ ] Tests
-    -  [ ] Rapport
+    -  [X] Tests et Debug
+    -  [X] Tests
+    -  [X] Rapport
 
 - Séance TP5  : 
-    -  [ ] Tests et Debug
-    -  [ ] Rapport
+    -  [X] Tests et Debug
+    -  [X] Rapport
 
 - Séance TP6 : 
     -  [ ] Tests et Debug
