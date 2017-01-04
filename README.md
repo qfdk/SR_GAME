@@ -3,11 +3,47 @@
 ## Architecture 
 
 Le jeux repose sur une architecture client/serveur.
-Le serveur sera de type Node JS
+Le serveur sera de type Node.js
 Les techno utilisées : Node JS, Socket.io, Mocha, Git, Travis
 
+## Dans ce Projet
+
+```bash
+├── README.md # reademe
+├── config.js # config
+├── lancer.js # test
+├── node_modules # module downloaded
+├── package.json 
+├── public # static source
+│   ├── css
+│   ├── favicon.ico
+│   ├── js
+│   └── stylesheets
+├── server.js # lancer
+├── test
+│   ├── test.js
+│   ├── test2.js
+│   └── testClients.js
+└── views
+```
+
+
+## Lancement
+
+```bash
+git clone https://github.com/qfdk/SR_GAME.git
+cd SR_GAME
+npm install && npm start
+```
+Point your browser to `http://localhost:3000`
+
+Enter your nickname then enjoy !
+
+![](./img/1.png)
+![](./img/2.png)
+
 ## Suppositions
-Nous supposons que Node JS traite une requête à  la fois
+Nous supposons que Node.js traite une requête à  la fois
 
 ## Structure de données
 Une valeur de retour de type JSON 2 parties 
@@ -15,36 +51,18 @@ Une valeur de retour de type JSON 2 parties
 - Info Joueurs : position x et x, score
 - Info Bonbon : Liste des positions
 
+## API
+
+* /getJoueurs : nombre de joueurs en ligne
+> {size:5}
+
+* message
+
 ```json
-Exemple :
 {
-    msg:ok/no,
-    joueurs :
-    [
-        {
-            pseudo : clt1
-            x : 10,
-            y : 11,
-            score : 12
-        },
-        {
-            pseudo : clt2
-            x : 10,
-            y : 11,
-            score : 12
-        }
-    ],
-    bonbons 
-    [
-        { 
-            x : 1
-            y : 4,
-        },
-        {
-            x : 6
-            y : 10
-        }
-    ]
+    msg: "ok", 
+    joueurs: Array[1],
+    bonbons: Array[20]
 }
 ```
 
@@ -52,15 +70,6 @@ Exemple :
 
 - Joueur : 2 joueurs peuvent pas être  à la même position
 - Bonbon : A la fin du jeu, la somme des bonbons == la somme des scores
-
-## Interface
-
-{
-    msg:ok/no,
-    position:
-}
-JSON move(up | left | down | right | UL | UR | DL | DR);
-
 
 ## Plan de travail
 

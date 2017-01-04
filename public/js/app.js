@@ -20,15 +20,14 @@ $('#myModal').keyup(function(evt) {
 socket.on('ok', function(data) {
     var score = ""
     var joueurs = [];
-    joueurs = JSON.parse(data).joueurs;
-
+    var tmp = JSON.parse(data);
+    joueurs = tmp.joueurs;
 
     for (var i = 0; i < joueurs.length; i++) {
         var j = joueurs[i];
         score += j.pseudo + " => " + j.score + "</BR> "
     }
-
-    drawGame(JSON.parse(data));
+    drawGame(tmp);
     $('#score').html(score)
 });
 
