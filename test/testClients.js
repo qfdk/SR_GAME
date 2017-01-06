@@ -7,7 +7,7 @@ var sleep = require('sleep');
 
 var url = "http://localhost:3000/getJoueurs";
 var joueurs = [];
-const NB_joueurs = 100;
+const NB_joueurs = 10;
 
 for (var i = 0; i < NB_joueurs; i++) {
     joueurs[i] = io.connect("http://localhost:3000", {
@@ -16,7 +16,7 @@ for (var i = 0; i < NB_joueurs; i++) {
     }).emit('start', { pseudo: "joueur" + i });
 }
 
-sleep.sleep(10);
+sleep.sleep(5);
 
 describe('[1] Joueurs test', function () {
     httpUtils.save(url);

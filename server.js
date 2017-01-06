@@ -10,7 +10,6 @@ var favicon = require('serve-favicon');
 // ------------------------------------------------
 // -----------------INITIALISATION-----------------
 // ------------------------------------------------
-// var existedElements = [];
 var sockets = []; // Liste des sockets client
 var joueurs = []; // Players avec leurs infos : pseudo, score, position
 var bonbons = []; // Liste des Bonbons avec position
